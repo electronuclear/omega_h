@@ -304,6 +304,17 @@ endmacro(osh_add_util)
 
 osh_add_util(describe)
 osh_add_util(msh2osh)
+if(UNIX)
+  # fast_msh2osh maps its input file with POSIX mmap, so it is registered on
+  # POSIX platforms only. Its optional --threads mode uses OpenMP, linked only
+  # when available so builds without OpenMP remain valid (the tool then parses
+  # serially).
+  osh_add_util(fast_msh2osh)
+  find_package(OpenMP QUIET)
+  if(OpenMP_CXX_FOUND)
+    target_link_libraries(fast_msh2osh PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+endif()
 osh_add_util(osh2vtk)
 osh_add_util(oshdiff)
 osh_add_util(vtkdiff)
